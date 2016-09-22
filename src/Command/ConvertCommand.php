@@ -6,6 +6,7 @@ use Mooneye\Yaml2XliffConverter\XLIFF\FileNotFoundException;
 use Mooneye\Yaml2XliffConverter\XLIFF\Writer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class ConvertCommand extends ContainerAwareCommand
 {
+    private $id;
+
     protected function configure()
     {
         $this->setName('convert')
@@ -27,15 +30,33 @@ class ConvertCommand extends ContainerAwareCommand
                 InputArgument::OPTIONAL,
                 'XLIFF output dir'
             )
-            ->addArgument(
+            ->addOption(
                 'source-language',
-                InputArgument::OPTIONAL,
-                'Source language'
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Source language',
+                'de'
             )
-            ->addArgument(
+            ->addOption(
                 'target-language',
-                InputArgument::OPTIONAL,
-                'Target language'
+                't',
+                InputOption::VALUE_OPTIONAL,
+                'Target language',
+                'de'
+            )
+            ->addOption(
+                'keep-spaces',
+                'k',
+                InputOption::VALUE_OPTIONAL,
+                'Preserver Spaces?',
+                false
+            )
+            ->addOption(
+                'use-id',
+                'i',
+                InputOption::VALUE_OPTIONAL,
+                'Use ID for trans-units?',
+                false
             );
     }
 
@@ -62,7 +83,7 @@ class ConvertCommand extends ContainerAwareCommand
             'info'
         );
 
-        $sourceLanguage = $this->prepareSourceLanguage($input);
+        $sourceLanguage = $input->getOption('source-language');
         $targetLanguage = $this->prepareTargetLanguage($input);
 
         $style->block(
@@ -71,16 +92,19 @@ class ConvertCommand extends ContainerAwareCommand
             'info'
         );
 
+        $keepSpaces = $input->getOption('keep-spaces');
+
+        $this->id = 0;
+        $useId = $input->getOption('use-id');
+
         $yml = $this->prepareYML($inputFile);
 
         $ymlCount = count($yml);
-
         $style->block(
             sprintf('Total entries: %s ', $ymlCount),
             null,
             'info'
         );
-
         $progressBar = $style->createProgressBar($ymlCount);
 
         $this->convert(
@@ -88,9 +112,9 @@ class ConvertCommand extends ContainerAwareCommand
             $outputFile,
             $sourceLanguage,
             $targetLanguage,
-            $progressBar,
-            false,
-            $style
+            $keepSpaces,
+            $useId,
+            $progressBar
         );
 
         $progressBar->finish();
@@ -113,17 +137,18 @@ class ConvertCommand extends ContainerAwareCommand
      * @param string $outputFile
      * @param string $sourceLanguage
      * @param string $targetLanguage
-     * @param ProgressBar $progress
      * @param bool $keepSpaces
+     * @param bool $useId
+     * @param ProgressBar $progress
      */
     private function convert(
         $yml,
         $outputFile,
         $sourceLanguage,
         $targetLanguage,
-        ProgressBar $progress,
         $keepSpaces,
-        SymfonyStyle $style
+        $useId,
+        ProgressBar $progress
     )
     {
         $writer = $this->createWriter();
@@ -131,26 +156,11 @@ class ConvertCommand extends ContainerAwareCommand
         $writer->startDocument();
         $writer->startFile($sourceLanguage, $targetLanguage);
 
-        $id = 0;
         foreach ($yml as $source => $target) {
-            $style->block(
-                sprintf('Source: %s ', $source),
-                null,
-                'info'
-            );
-
-            $style->block(
-                sprintf('Target: %s ', $target),
-                null,
-                'info'
-            );
-
-            $id++;
             $writer->writeTransUnit(
-                $id++,
                 $source,
                 $target,
-                false,
+                $this->getId($useId),
                 $keepSpaces
             );
             $progress->advance();
@@ -168,7 +178,7 @@ class ConvertCommand extends ContainerAwareCommand
     private function prepareOutputFile(InputInterface $input, $inputFile)
     {
         $outputFile = $input->getArgument('output-file');
-        if (NULL === $outputFile) {
+        if (null === $outputFile) {
             $outputFile = dirname($inputFile) . '/' . basename($inputFile, 'yml') . 'xliff';
         }
         return $outputFile;
@@ -182,7 +192,7 @@ class ConvertCommand extends ContainerAwareCommand
     private function prepareInputFile($input)
     {
         $inputFile = $input->getArgument('input-file');
-        if (FALSE === file_exists($inputFile)) {
+        if (false === file_exists($inputFile)) {
             throw new FileNotFoundException('Input file not found.');
         }
         return $inputFile;
@@ -192,22 +202,9 @@ class ConvertCommand extends ContainerAwareCommand
      * @param InputInterface $input
      * @return mixed
      */
-    private function prepareSourceLanguage($input)
-    {
-        $sourceLanguage = $input->getArgument('source-language');
-        if (NULL === $sourceLanguage) {
-            $sourceLanguage = 'de';
-        }
-        return $sourceLanguage;
-    }
-
-    /**
-     * @param InputInterface $input
-     * @return mixed
-     */
     private function prepareTargetLanguage($input)
     {
-        $targetLanguage = $input->getArgument('target-language');
+        $targetLanguage = $input->getOption('target-language');
         switch($targetLanguage){
             case 'en':
                 return 'en-US';
@@ -233,16 +230,29 @@ class ConvertCommand extends ContainerAwareCommand
      * @param  string $currentKey
      * @return array
      */
-    protected function flat(array $source, $flattened = [], $currentKey = '')
+    private function flat(array $source, $flattened = [], $currentKey = '')
     {
         foreach ($source as $key => $value) {
             $newKey = ('' === $currentKey) ? $key : $currentKey . '.' . $key;
-            if (TRUE === is_array($value)) {
+            if (true === is_array($value)) {
                 $flattened = $this->flat($value, $flattened, $newKey);
             } else {
                 $flattened[$newKey] = $value;
             }
         }
         return $flattened;
+    }
+
+    /**
+     * @param bool $useId
+     * @return int|null
+     */
+    private function getId($useId)
+    {
+        if(true === $useId) {
+            return $this->id++;
+        } else {
+            return null;
+        }
     }
 }

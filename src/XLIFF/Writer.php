@@ -61,7 +61,7 @@ class Writer
         $this->writer->writeAttribute('target-language', $targetLanguage);
         $this->writer->startElement('body');
     }
-    
+
     public function endFile()
     {
         $this->writer->endElement(); // body
@@ -69,22 +69,23 @@ class Writer
     }
 
     /**
-     * @param int $id
      * @param string $source
      * @param string $target
-     * @param bool $approved
+     * @param int $id
      * @param bool $keepSpaces
      */
-    public function writeTransUnit($id, $source, $target, $approved = false, $keepSpaces = false)
+    public function writeTransUnit($source, $target, $id = null, $keepSpaces = false)
     {
         $this->writer->startElement('trans-unit');
-        $this->writer->writeAttribute('id', $id);
+
+        if (isset($id)) {
+            $this->writer->writeAttribute('id', $id);
+        }
+
         if ($keepSpaces) {
             $this->writer->writeAttribute('xml:space', 'preserve');
         }
-        if ($approved) {
-            $this->writer->writeAttribute('approved', 'yes');
-        }
+
         $this->writer->writeElement('source', $source);
         $this->writer->writeElement('target', $target);
         $this->writer->endElement(); // trans-unit
