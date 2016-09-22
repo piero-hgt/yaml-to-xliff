@@ -1,0 +1,6 @@
+services:
+    filesystem:
+        class: Symfony\Component\Filesystem\Filesystem
+
+    xliff_writer_factory:
+        class: Mooneye\Yaml2XliffConverter\XLIFF\WriterFactory

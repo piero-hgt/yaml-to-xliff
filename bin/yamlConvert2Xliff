@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+namespace Mooneye\Yaml2XliffConverter;
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$application = new Application();
+$application->run();

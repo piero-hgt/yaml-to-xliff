@@ -1,0 +1,35 @@
+{
+    "name": "eramon/convert-yaml-to-xliff",
+    "description": "Converts Yaml-Files into XLIFF.",
+    "minimum-stability": "stable",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Geraldes Pereira Ferreira",
+            "email": "geraldes@mooneye.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Mooneye\\Yaml2XliffConverter\\": "src"
+        }
+    },
+    "require": {
+        "php": "^5.4|^7.0",
+        "ext-xmlwriter": "*",
+        "symfony/console": "^2.8|^3.0",
+        "symfony/dependency-injection": "^2.8|^3.0",
+        "symfony/config": "^2.8|^3.0",
+        "symfony/yaml": "^2.8|^3.0",
+        "symfony/expression-language": "^2.8",
+        "psr/log": "^1.0"
+    },
+    "require-dev": {
+        "kherge/box": "~2.0"
+    },
+    "config": {
+        "platform": {
+            "php": "5.4"
+        }
+    }
+}
