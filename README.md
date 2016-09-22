@@ -54,3 +54,5 @@ Available commands:
   list     Lists commands
 ```
 
+## Note
+Sometimes you have to uncomment auto_prepend_file option in your php.ini
