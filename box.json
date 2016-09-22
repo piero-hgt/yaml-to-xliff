@@ -1,6 +1,6 @@
 {
     "directories": ["src", "vendor"],
     "main": "bin/yamlConvert2Xliff",
-    "output": "yamlConvert2Xliff",
+    "output": "yamlConvert2Xliff.phar",
     "stub": true
 }

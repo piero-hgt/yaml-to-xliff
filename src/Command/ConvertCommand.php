@@ -89,7 +89,7 @@ class ConvertCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param Traversable|array[] $yml
+     * @param array $yml
      * @param string $outputFile
      * @param string $sourceLanguage
      * @param string $targetLanguage
@@ -97,7 +97,7 @@ class ConvertCommand extends ContainerAwareCommand
      * @param bool $keepSpaces
      */
     private function convert(
-        Traversable $yml,
+        $yml,
         $outputFile,
         $sourceLanguage,
         $targetLanguage,
