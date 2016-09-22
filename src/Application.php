@@ -54,7 +54,7 @@ class Application extends SymfonyApplication
         }
 
         $style = new SymfonyStyle($input, $output);
-        $style->error('Starting Converter Job');
+        $style->success('Starting Converter Job');
 
         return parent::doRunCommand($command, $input, $output);
     }

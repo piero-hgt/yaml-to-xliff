@@ -55,11 +55,31 @@ class ConvertCommand extends ContainerAwareCommand
         );
 
         $outputFile = $this->prepareOutputFile($input, $inputFile);
+
+        $style->block(
+            sprintf('XLIFF Output: %s ', $outputFile),
+            null,
+            'info'
+        );
+
         $sourceLanguage = $this->prepareSourceLanguage($input);
         $targetLanguage = $this->prepareTargetLanguage($input);
+
+        $style->block(
+            sprintf('Target Language: %s ', $targetLanguage),
+            null,
+            'info'
+        );
+
         $yml = $this->prepareYML($inputFile);
 
         $ymlCount = count($yml);
+
+        $style->block(
+            sprintf('Total entries: %s ', $ymlCount),
+            null,
+            'info'
+        );
 
         $progressBar = $style->createProgressBar($ymlCount);
 
@@ -69,7 +89,8 @@ class ConvertCommand extends ContainerAwareCommand
             $sourceLanguage,
             $targetLanguage,
             $progressBar,
-            false
+            false,
+            $style
         );
 
         $progressBar->finish();
@@ -101,7 +122,8 @@ class ConvertCommand extends ContainerAwareCommand
         $sourceLanguage,
         $targetLanguage,
         ProgressBar $progress,
-        $keepSpaces
+        $keepSpaces,
+        SymfonyStyle $style
     )
     {
         $writer = $this->createWriter();
@@ -111,6 +133,18 @@ class ConvertCommand extends ContainerAwareCommand
 
         $id = 0;
         foreach ($yml as $source => $target) {
+            $style->block(
+                sprintf('Source: %s ', $source),
+                null,
+                'info'
+            );
+
+            $style->block(
+                sprintf('Target: %s ', $target),
+                null,
+                'info'
+            );
+
             $id++;
             $writer->writeTransUnit(
                 $id++,
