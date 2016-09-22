@@ -10,6 +10,7 @@
         }
     ],
     "autoload": {
+        "classmap": [""],
         "psr-4": {
             "Mooneye\\Yaml2XliffConverter\\": "src"
         }
