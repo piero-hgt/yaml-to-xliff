@@ -1,5 +1,5 @@
 {
-    "name": "eramon/convert-yaml-to-xliff",
+    "name": "mooneye/convert-yaml-to-xliff",
     "description": "Converts Yaml-Files into XLIFF.",
     "minimum-stability": "stable",
     "license": "proprietary",
@@ -15,13 +15,12 @@
         }
     },
     "require": {
-        "php": "^5.4|^7.0",
+        "php": "^5.3.9|^7.0",
         "ext-xmlwriter": "*",
         "symfony/console": "^2.8|^3.0",
         "symfony/dependency-injection": "^2.8|^3.0",
         "symfony/config": "^2.8|^3.0",
         "symfony/yaml": "^2.8|^3.0",
-        "symfony/expression-language": "^2.8",
         "psr/log": "^1.0"
     },
     "require-dev": {
@@ -29,7 +28,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.4"
+            "php": "5.3.21"
         }
     }
 }

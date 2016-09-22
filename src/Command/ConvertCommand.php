@@ -10,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Traversable;
 
 class ConvertCommand extends ContainerAwareCommand
 {

@@ -6,6 +6,7 @@ use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -51,7 +52,10 @@ class Application extends SymfonyApplication
             $container = $this->createContainer();
             $command->setContainer($container);
         }
-        
+
+        $style = new SymfonyStyle($input, $output);
+        $style->error('Starting Converter Job');
+
         return parent::doRunCommand($command, $input, $output);
     }
 
