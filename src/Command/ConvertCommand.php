@@ -47,14 +47,14 @@ class ConvertCommand extends ContainerAwareCommand
                 'k',
                 InputOption::VALUE_NONE,
                 'Preserver Spaces?',
-                false
+                null
             )
             ->addOption(
                 'use-id',
                 'i',
                 InputOption::VALUE_NONE,
                 'Use ID for trans-units?',
-                false
+                null
             );
     }
 
