@@ -26,34 +26,34 @@ class ConvertCommand extends ContainerAwareCommand
             ->addArgument(
                 'output-file',
                 InputArgument::OPTIONAL,
-                'XML output dir'
+                'Where to output xliff file'
             )
             ->addOption(
                 'source-language',
                 's',
                 InputOption::VALUE_REQUIRED,
-                'Source language',
+                'Set source language attribute in xliff file',
                 'de'
             )
             ->addOption(
                 'target-language',
                 't',
                 InputOption::VALUE_REQUIRED,
-                'Target language',
+                'Set target language attribute in xliff file',
                 'de'
             )
             ->addOption(
                 'keep-spaces',
                 'k',
                 InputOption::VALUE_NONE,
-                'Preserver Spaces?',
+                'Preserve spaces in xliff file?',
                 null
             )
             ->addOption(
                 'use-id',
                 'i',
                 InputOption::VALUE_NONE,
-                'Use ID for trans-units?',
+                'Use id for trans-units?',
                 null
             );
     }
@@ -66,7 +66,6 @@ class ConvertCommand extends ContainerAwareCommand
         $style = new SymfonyStyle($input, $output);
 
         $inputFile = $this->prepareInputFile($input);
-
         $style->block(
             sprintf('Converting YAML: %s ', $inputFile),
             null,
@@ -74,7 +73,6 @@ class ConvertCommand extends ContainerAwareCommand
         );
 
         $outputFile = $this->prepareOutputFile($input, $inputFile);
-
         $style->block(
             sprintf('XML Output: %s ', $outputFile),
             null,
@@ -83,7 +81,11 @@ class ConvertCommand extends ContainerAwareCommand
 
         $sourceLanguage = $input->getOption('source-language');
         $targetLanguage = $this->prepareTargetLanguage($input);
-
+        $style->block(
+            sprintf('Source Language: %s ', $sourceLanguage),
+            null,
+            'info'
+        );
         $style->block(
             sprintf('Target Language: %s ', $targetLanguage),
             null,
@@ -91,8 +93,18 @@ class ConvertCommand extends ContainerAwareCommand
         );
 
         $keepSpaces = $input->getOption('keep-spaces');
+        $style->block(
+            sprintf('Keeping spaces: %s ', $keepSpaces ? 'true' : 'false'),
+            null,
+            'info'
+        );
 
         $useId = $input->getOption('use-id');
+        $style->block(
+            sprintf('Using generated id: %s ', $useId ? 'true' : 'false'),
+            null,
+            'info'
+        );
 
         $yml = $this->prepareYML($inputFile);
 
