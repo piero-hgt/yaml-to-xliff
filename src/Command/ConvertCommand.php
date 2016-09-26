@@ -2,24 +2,22 @@
 
 namespace Mooneye\Yaml2XliffConverter\Command;
 
-use Mooneye\Yaml2XliffConverter\XLIFF\FileNotFoundException;
-use Mooneye\Yaml2XliffConverter\XLIFF\Writer;
+use Mooneye\Yaml2XliffConverter\Exceptions\FileNotFoundException;
+use Mooneye\Yaml2XliffConverter\XML\Writer;
+use Mooneye\Yaml2XliffConverter\YAML\Reducer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 class ConvertCommand extends ContainerAwareCommand
 {
-    private $id;
-
     protected function configure()
     {
         $this->setName('convert')
-            ->setDescription('Converting YAML files to XLIFF stuff.')
+            ->setDescription('Converting YAML files to XML stuff.')
             ->addArgument(
                 'input-file',
                 InputArgument::REQUIRED,
@@ -28,7 +26,7 @@ class ConvertCommand extends ContainerAwareCommand
             ->addArgument(
                 'output-file',
                 InputArgument::OPTIONAL,
-                'XLIFF output dir'
+                'XML output dir'
             )
             ->addOption(
                 'source-language',
@@ -78,7 +76,7 @@ class ConvertCommand extends ContainerAwareCommand
         $outputFile = $this->prepareOutputFile($input, $inputFile);
 
         $style->block(
-            sprintf('XLIFF Output: %s ', $outputFile),
+            sprintf('XML Output: %s ', $outputFile),
             null,
             'info'
         );
@@ -94,7 +92,6 @@ class ConvertCommand extends ContainerAwareCommand
 
         $keepSpaces = $input->getOption('keep-spaces');
 
-        $this->id = 0;
         $useId = $input->getOption('use-id');
 
         $yml = $this->prepareYML($inputFile);
@@ -128,8 +125,18 @@ class ConvertCommand extends ContainerAwareCommand
     private function createWriter()
     {
         return $this->container
-            ->get('xliff_writer_factory')
+            ->get('factory.xml_writer')
             ->createWriter();
+    }
+
+    /**
+     * @return Reducer
+     */
+    private function createYAMLReducer()
+    {
+        return $this->container
+            ->get('factory.yaml_reducer')
+            ->createReducer();
     }
 
     /**
@@ -160,7 +167,7 @@ class ConvertCommand extends ContainerAwareCommand
             $writer->writeTransUnit(
                 $source,
                 $target,
-                $this->getId($useId),
+                $useId,
                 $keepSpaces
             );
             $progress->advance();
@@ -220,39 +227,7 @@ class ConvertCommand extends ContainerAwareCommand
      */
     private function prepareYML($inputFile)
     {
-        $yml = Yaml::parse($inputFile);
-        return $this->flat($yml);
-    }
-
-    /**
-     * @param  array $source
-     * @param  array $flattened
-     * @param  string $currentKey
-     * @return array
-     */
-    private function flat(array $source, $flattened = [], $currentKey = '')
-    {
-        foreach ($source as $key => $value) {
-            $newKey = ('' === $currentKey) ? $key : $currentKey . '.' . $key;
-            if (true === is_array($value)) {
-                $flattened = $this->flat($value, $flattened, $newKey);
-            } else {
-                $flattened[$newKey] = $value;
-            }
-        }
-        return $flattened;
-    }
-
-    /**
-     * @param bool $useId
-     * @return int|null
-     */
-    private function getId($useId)
-    {
-        if(true === $useId) {
-            return $this->id++;
-        } else {
-            return null;
-        }
+        $yamlReducer = $this->createYAMLReducer();
+        return $yamlReducer->getReduced($inputFile);
     }
 }

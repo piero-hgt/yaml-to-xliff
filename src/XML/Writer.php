@@ -1,6 +1,6 @@
 <?php
 
-namespace Mooneye\Yaml2XliffConverter\XLIFF;
+namespace Mooneye\Yaml2XliffConverter\XML;
 
 use XMLWriter;
 
@@ -10,10 +10,19 @@ class Writer
      * @var XMLWriter
      */
     private $writer;
+    /**
+     * @var IDGenerator
+     */
+    private $idGenerator;
 
-    public function __construct()
+    /**
+     * Writer constructor.
+     * @param IDGenerator $idGenerator
+     */
+    public function __construct(IDGenerator $idGenerator)
     {
         $this->writer = new XMLWriter();
+        $this->idGenerator = $idGenerator;
     }
 
     /**
@@ -71,15 +80,18 @@ class Writer
     /**
      * @param string $source
      * @param string $target
-     * @param int $id
+     * @param bool $useId
      * @param bool $keepSpaces
      */
-    public function writeTransUnit($source, $target, $id = null, $keepSpaces = false)
+    public function writeTransUnit($source, $target, $useId = false, $keepSpaces = false)
     {
         $this->writer->startElement('trans-unit');
 
-        if (isset($id)) {
-            $this->writer->writeAttribute('id', $id);
+        if ($useId === true) {
+            $this->writer->writeAttribute(
+                'id',
+                $this->idGenerator->get()
+            );
         }
 
         if ($keepSpaces) {

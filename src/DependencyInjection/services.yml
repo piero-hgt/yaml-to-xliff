@@ -2,5 +2,16 @@ services:
     filesystem:
         class: Symfony\Component\Filesystem\Filesystem
 
-    xliff_writer_factory:
-        class: Mooneye\Yaml2XliffConverter\XLIFF\WriterFactory
+    factory.xml_writer:
+        class: Mooneye\Yaml2XliffConverter\Factory\WriterFactory
+        arguments: ['@xml.id_generator']
+
+    factory.yaml_reducer:
+        class: Mooneye\Yaml2XliffConverter\Factory\YamlReducerFactory
+
+    xml.id_generator:
+        class: Mooneye\Yaml2XliffConverter\XML\IDGenerator
+
+    xml.writer:
+        class: Mooneye\Yaml2XliffConverter\XML\Writer
+        arguments: ['@xml.id_generator']

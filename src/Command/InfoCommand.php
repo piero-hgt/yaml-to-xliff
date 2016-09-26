@@ -6,6 +6,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Class InfoCommand
+ * @package Mooneye\Yaml2XliffConverter\Command
+ *
+ * TODO: Implement to get some serious information
+ */
 class InfoCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -17,6 +23,6 @@ class InfoCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $style = new SymfonyStyle($input, $output);
-        $style->block(sprintf('The convertion was successful'), null, 'info');
+        $style->block(sprintf('The convertion was successful.'), null, 'info');
     }
 }
