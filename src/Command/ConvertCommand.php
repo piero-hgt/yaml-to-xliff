@@ -31,28 +31,28 @@ class ConvertCommand extends ContainerAwareCommand
             ->addOption(
                 'source-language',
                 's',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Source language',
                 'de'
             )
             ->addOption(
                 'target-language',
                 't',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Target language',
                 'de'
             )
             ->addOption(
                 'keep-spaces',
                 'k',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_NONE,
                 'Preserver Spaces?',
                 false
             )
             ->addOption(
                 'use-id',
                 'i',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_NONE,
                 'Use ID for trans-units?',
                 false
             );
